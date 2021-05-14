@@ -1,16 +1,81 @@
 import React from "react"
+import { Link, graphql } from 'gatsby'
+import blogStyles from './blog.module.css' 
+import Head from '../components/head'
 import "../../src/components/layout.css"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
-import BusinessServices from "./components/businessservices"
 
-
-const BusinessServicesPage = () => (
+const BusinessServicesPage = ({ data }) => {
+  return(
   <Layout>
     <SEO title="Business Services" />
     <h1 className="portfolio">BUSINESS SERVICES</h1>
-    <BusinessServices />
+    <div className="container pt30 pb30">
+        <Head title="Blog" />  
+        <div>
+          <h1>{data.contentfulMain.pageHeader}</h1>
+          <h3>{data.contentfulMain.pageSubheader.pageSubheader}</h3>
+          <p>{data.contentfulMain.pageBody.pageBody}</p>
+        </div> 
+        <ol className={blogStyles.posts}>
+          {data.allContentfulMenuArticleE.edges.map((edge) => {
+            return  (
+              <li key={edge.node.id} className={blogStyles.post}>
+                <Link to={`/${edge.node.slug}`}>
+                  <div className="row">
+                    <h2>{edge.node.title}</h2>
+                  </div>
+                  <div className="row">
+                    <div className="col-lg-8">
+                      <p>{edge.node.body.body}</p>
+                    </div>
+                    <div className="col-lg-4">  
+                      <img   
+                          src={edge.node.bsImage.fluid.src} 
+                          alt={edge.node.title}
+                      /> 
+                    </div>    
+                  </div>  
+                </Link>
+              </li>
+            )    
+          })} 
+        </ol>
+      </div>  
   </Layout>
-)
+);
+}
+
+export const query = graphql`
+    query {
+      contentfulMain(pageHeader: {eq: "Business Services"}) {
+        pageHeader
+        pageSubheader {
+          pageSubheader
+        }
+        pageBody {
+          pageBody
+        }
+      }
+      allContentfulMenuArticleE {
+        edges {
+          node {
+            id
+            title
+            slug
+            body {
+              body
+            }
+            bsImage {
+              fluid(maxWidth: 300) {
+                  src
+              }
+            }
+          }
+        }
+      }
+    }
+  `;
 
 export default BusinessServicesPage
